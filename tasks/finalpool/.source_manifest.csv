@@ -6,7 +6,6 @@ gyy|tasks/gyy/|blog-engine
 gyy|tasks/gyy/|cms-builder
 gyy|tasks/gyy/|content-scheduler
 gyy|tasks/gyy/|robots-handler
-gyy|tasks/gyy/|sitemap-generator
 gyy|tasks/gyy/|social-publisher
 gyy|tasks/gyy/|tag-manager
 haoze|tasks/haoze/|media-organizer
@@ -21,7 +20,6 @@ jl_dev|tasks/jl/|pdf-report-generator
 junteng_dev|tasks/junteng/|booking-system
 junteng_dev|tasks/junteng/|calendar-sync
 junteng_dev|tasks/junteng/|contact-manager
-junteng_dev|tasks/junteng/|customer-portal
 junteng_dev|tasks/junteng/|help-desk
 junteng_dev|tasks/junteng/|order-processor
 junteng_dev|tasks/junteng/|product-catalog
