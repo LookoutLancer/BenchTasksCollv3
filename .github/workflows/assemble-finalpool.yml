@@ -22,10 +22,22 @@ jobs:
             echo 'Final task pool already assembled.'
             exit 0
           fi
-          while IFS='|' read -r branch prefix task; do
-            [[ -n "${task:-}" ]] || continue
-            git fetch --no-tags --depth=1 origin "+refs/heads/${branch}:refs/remotes/origin/${branch}"
-          done < <(cut -d'|' -f1 tasks/finalpool/.source_manifest.csv | sort -u)
+          git fetch --no-tags --depth=1 origin \
+            +refs/heads/fan-dev:refs/remotes/origin/fan-dev \
+            +refs/heads/gyy:refs/remotes/origin/gyy \
+            +refs/heads/haoze:refs/remotes/origin/haoze \
+            +refs/heads/jl_dev:refs/remotes/origin/jl_dev \
+            +refs/heads/junteng_dev:refs/remotes/origin/junteng_dev \
+            +refs/heads/junxian_dev:refs/remotes/origin/junxian_dev \
+            +refs/heads/lueyang-dev:refs/remotes/origin/lueyang-dev \
+            +refs/heads/lv:refs/remotes/origin/lv \
+            +refs/heads/ruige:refs/remotes/origin/ruige \
+            +refs/heads/wenshuo-dev:refs/remotes/origin/wenshuo-dev \
+            +refs/heads/xiaochen_dev:refs/remotes/origin/xiaochen_dev \
+            +refs/heads/yuxuan-dev:refs/remotes/origin/yuxuan-dev \
+            +refs/heads/yuzhen-dev:refs/remotes/origin/yuzhen-dev \
+            +refs/heads/zhaochen:refs/remotes/origin/zhaochen
+          git show-ref --verify refs/remotes/origin/fan-dev
           while IFS='|' read -r branch prefix task; do
             [[ -n "${task:-}" ]] || continue
             dest="tasks/finalpool/$task"
