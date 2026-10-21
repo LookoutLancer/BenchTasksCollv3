@@ -1,0 +1,55 @@
+name: Assemble final task pool
+on:
+  push:
+    branches: [finalpool]
+    paths: [tasks/finalpool/.source_manifest.csv]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: finalpool
+          fetch-depth: 1
+      - name: Assemble tasks/finalpool
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f tasks/finalpool/README.md ]]; then
+            echo 'Final task pool already assembled.'
+            exit 0
+          fi
+          while IFS='|' read -r branch prefix task; do
+            [[ -n "${task:-}" ]] || continue
+            git fetch --no-tags --depth=1 origin "+refs/heads/${branch}:refs/remotes/origin/${branch}"
+          done < <(cut -d'|' -f1 tasks/finalpool/.source_manifest.csv | sort -u)
+          while IFS='|' read -r branch prefix task; do
+            [[ -n "${task:-}" ]] || continue
+            dest="tasks/finalpool/$task"
+            mkdir -p "$dest"
+            git archive --format=tar "refs/remotes/origin/$branch" "${prefix}${task}" | tar -x -C "$dest" --strip-components=3
+          done < tasks/finalpool/.source_manifest.csv
+          count=$(find tasks/finalpool -mindepth 1 -maxdepth 1 -type d | wc -l)
+          [[ "$count" -eq 79 ]] || { echo "Expected 79 tasks, got $count" >&2; exit 1; }
+          for dir in tasks/finalpool/*/; do
+            [[ -s "$dir/docs/agent_system_prompt.md" && -s "$dir/docs/task.md" ]] || { echo "Missing required docs in $dir" >&2; exit 1; }
+          done
+          {
+            echo '# Final task pool'
+            echo
+            echo 'Implemented tasks selected from Task Tracker. Original branches are recorded in `.source_manifest.csv`.'
+            echo
+            echo '## Tasks'
+            echo
+            while IFS='|' read -r branch prefix task; do
+              [[ -n "${task:-}" ]] && echo "- \`$task\` (developer branch: \`$branch\`)"
+            done < tasks/finalpool/.source_manifest.csv
+          } > tasks/finalpool/README.md
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add tasks/finalpool
+          git commit -m 'Assemble 79 implemented tasks in tasks/finalpool'
+          git push origin HEAD:finalpool
